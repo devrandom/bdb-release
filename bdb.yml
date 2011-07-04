@@ -1,0 +1,34 @@
+---
+name: "bdb"
+suites:
+- "lucid"
+architectures:
+- "amd64"
+- "i386"
+packages: []
+reference_datetime: "2011-01-30 00:00:00"
+remotes: []
+files:
+- "db4.7_4.7.25.orig.tar.gz"
+script: |
+  INSTDIR="$HOME/install"
+  #
+  tar xzf db4.7_4.7.25.orig.tar.gz
+  cd db-4.7.25/build_unix
+  ../dist/configure --enable-cxx --prefix=$INSTDIR
+  make $MAKEOPTS
+  make install
+  cd $INSTDIR/lib
+  rm -f *.o || true
+  ar x libdb.a
+  rm libdb.a
+  ar crD libdb.a *.o
+  rm -f *.o || true
+  ar x libdb_cxx.a
+  rm libdb_cxx.a
+  ar crD libdb_cxx.a *.o
+  cd ..
+  cp -af include $OUTDIR
+  mkdir -p $OUTDIR/bin/$GBUILD_BITS
+  cp -af lib/lib{db,db_cxx}.a $OUTDIR/bin/$GBUILD_BITS
+  chmod -R +w $OUTDIR
